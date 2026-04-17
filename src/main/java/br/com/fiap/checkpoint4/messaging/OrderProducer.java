@@ -1,6 +1,5 @@
 package br.com.fiap.checkpoint4.messaging;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -15,8 +14,7 @@ public class OrderProducer {
 
     private final JmsTemplate queueJmsTemplate;
 
-    public OrderProducer(
-            @Qualifier("queueJmsTemplate") JmsTemplate queueJmsTemplate) {
+    public OrderProducer(JmsTemplate queueJmsTemplate) {
         this.queueJmsTemplate = queueJmsTemplate;
     }
 
@@ -27,6 +25,7 @@ public class OrderProducer {
 
     @PostMapping
     public ResponseEntity<String> send(@RequestBody OrderDTO orderDTO) {
+        // ReceiveOrderEvent event = new ReceiveOrderEvent(orderDTO, 1);
         this.queueJmsTemplate.convertAndSend("order.receiver.queue", orderDTO);
         return ResponseEntity.ok("ok");
     }
