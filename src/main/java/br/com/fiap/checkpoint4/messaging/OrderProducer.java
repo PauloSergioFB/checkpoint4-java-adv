@@ -5,6 +5,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import br.com.fiap.checkpoint4.presentation.transferObjects.Event;
 import br.com.fiap.checkpoint4.presentation.transferObjects.OrderDTO;
 
 @Component
@@ -25,8 +26,9 @@ public class OrderProducer {
 
     @PostMapping
     public ResponseEntity<String> send(@RequestBody OrderDTO orderDTO) {
-        // ReceiveOrderEvent event = new ReceiveOrderEvent(orderDTO, 1);
-        this.queueJmsTemplate.convertAndSend("order.receiver.queue", orderDTO);
+        Event event = new Event(orderDTO, 0, null);
+        this.queueJmsTemplate.convertAndSend("order.receiver.queue", event);
+        // System.out.println("QUEUE recebeu: " + event.payload()); // enviado
         return ResponseEntity.ok("ok");
     }
 

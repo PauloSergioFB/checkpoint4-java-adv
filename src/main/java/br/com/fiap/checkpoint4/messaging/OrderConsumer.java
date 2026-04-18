@@ -18,7 +18,7 @@ public class OrderConsumer {
     // @JmsListener(destination = "order.receiver.queue", containerFactory =
     // "jmsListenerContainerFactory")
     // public void onQueueMessage(Event event) {
-    // System.out.println("QUEUE recebeu: " + event.payload());
+    // System.out.println("Consumer recebeu: " + event.payload());
     // if (event.payload().products().contains("pizza")) {
     // throw new RuntimeException("Sem estoque de Pizza");
     // }
@@ -26,11 +26,6 @@ public class OrderConsumer {
 
     @JmsListener(destination = "order.receiver.queue", containerFactory = "jmsListenerContainerFactory")
     public void onQueueMessage(Event event) {
-        System.out.println("QUEUE recebeu: " + event.payload());
-        if (event.payload().products().contains("pizza")) {
-            throw new RuntimeException("Sem estoque de Pizza");
-        }
-
         try {
             System.out.println("QUEUE recebeu: " + event.payload());
 
@@ -41,7 +36,7 @@ public class OrderConsumer {
             System.out.println("Erro encontrado: " + error.getMessage());
             Integer nextAttempt = event.attempt() + 1;
 
-            if (event.attempt() > 3) {
+            if (event.attempt() >= 3) {
                 queueJmsTemplate.convertAndSend("order.receiver.CustomDLQ", event);
                 return;
             }
