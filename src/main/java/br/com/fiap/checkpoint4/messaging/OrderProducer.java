@@ -10,7 +10,7 @@ import br.com.fiap.checkpoint4.presentation.transferObjects.OrderDTO;
 
 @Component
 @RestController
-@RequestMapping("/api/v/orders")
+@RequestMapping("/api/v1/orders")
 public class OrderProducer {
 
     private final JmsTemplate queueJmsTemplate;
@@ -19,16 +19,14 @@ public class OrderProducer {
         this.queueJmsTemplate = queueJmsTemplate;
     }
 
-    @GetMapping
-    public ResponseEntity<String> ping() {
-        return ResponseEntity.ok("Ok");
-    }
-
     @PostMapping
     public ResponseEntity<String> send(@RequestBody OrderDTO orderDTO) {
-        Event event = new Event(orderDTO, 0, null);
-        this.queueJmsTemplate.convertAndSend("order.receiver.queue", event);
-        // System.out.println("QUEUE recebeu: " + event.payload()); // enviado
+        System.out.println("\nProducer: Pedido recebido " + orderDTO);
+
+        Event event = new Event(orderDTO, 0, null); // Inclusão de metadados na mensagem
+        System.out.println("Producer: Pedido enviado para order.receiver.queue");
+        queueJmsTemplate.convertAndSend("order.receiver.queue", event);
+
         return ResponseEntity.ok("ok");
     }
 

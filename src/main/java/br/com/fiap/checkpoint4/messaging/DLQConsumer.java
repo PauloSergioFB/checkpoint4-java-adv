@@ -10,12 +10,12 @@ public class DLQConsumer {
 
     @JmsListener(destination = "ActiveMQ.DLQ", containerFactory = "jmsListenerContainerFactory")
     public void onDqlMessage(Event event) {
-        System.out.println("DLQ recebeu: " + event.payload());
+        System.out.println("\nDLQ automática recebeu: " + event.payload());
     }
 
-    @JmsListener(destination = "order.receiver.CustomDLQ", containerFactory = "jmsListenerContainerFactory")
+    @JmsListener(destination = "order.receiver.dlq", containerFactory = "jmsListenerContainerFactory")
     public void onCustomDqlMessage(Event event) {
-        System.out.println("Custom DLQ recebeu: " + event.payload());
+        System.out.println("\nDLQ manual recebeu: " + event.payload() + " Motivo do erro: " + event.error());
     }
 
 }

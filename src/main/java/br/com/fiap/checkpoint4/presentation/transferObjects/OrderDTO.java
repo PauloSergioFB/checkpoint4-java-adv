@@ -5,8 +5,5 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record OrderDTO(
-        Long orderId,
-        List<String> products) {
-
+public record OrderDTO(Long orderId, List<String> products) {
 }
