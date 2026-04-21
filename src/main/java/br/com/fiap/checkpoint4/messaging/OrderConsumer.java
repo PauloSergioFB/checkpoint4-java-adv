@@ -15,35 +15,36 @@ public class OrderConsumer {
         this.queueJmsTemplate = queueJmsTemplate;
     }
 
-    // @JmsListener(destination = "order.receiver.queue", containerFactory =
-    // "jmsListenerContainerFactory")
-    // public void onQueueMessage(Event event) {
-    // System.out.println("Consumer recebeu: " + event.payload());
-    // if (event.payload().products().contains("pizza")) {
-    // throw new RuntimeException("Sem estoque de Pizza");
-    // }
-    // }
-
-    @JmsListener(destination = "order.receiver.queue", containerFactory = "jmsListenerContainerFactory")
-    public void onQueueMessage(Event event) {
-        try {
-            System.out.println("QUEUE recebeu: " + event.payload());
-
-            if (event.payload().products().contains("pizza")) {
-                throw new RuntimeException("Sem estoque de Pizza");
-            }
-        } catch (RuntimeException error) {
-            System.out.println("Erro encontrado: " + error.getMessage());
-            Integer nextAttempt = event.attempt() + 1;
-
-            if (event.attempt() >= 3) {
-                queueJmsTemplate.convertAndSend("order.receiver.CustomDLQ", event);
-                return;
-            }
-
-            Event newEvent = new Event(event.payload(), nextAttempt, error.getMessage());
-            queueJmsTemplate.convertAndSend("order.receiver.queue", newEvent);
+    // dlq automatica
+     @JmsListener(destination = "order.receiver.queue", containerFactory = "jmsListenerContainerFactory")
+     public void onQueueMessage(Event event) {
+        System.out.println("Consumer recebeu: " + event.payload());
+        if (event.payload().products().contains("pizza")) {
+            throw new RuntimeException("Sem estoque de Pizza");
         }
-    }
+     }
+
+     // este metodo é o mesmo que o de cima, porem aciona a dql manual.
+//    @JmsListener(destination = "order.receiver.queue", containerFactory = "jmsListenerContainerFactory")
+//    public void onQueueMessage(Event event) {
+//        try {
+//            System.out.println("QUEUE recebeu: " + event.payload());
+//
+//            if (event.payload().products().contains("pizza")) {
+//                throw new RuntimeException("Sem estoque de Pizza");
+//            }
+//        } catch (RuntimeException error) {
+//            System.out.println("Erro encontrado: " + error.getMessage());
+//            Integer nextAttempt = event.attempt() + 1;
+//
+//            if (event.attempt() >= 3) {
+//                queueJmsTemplate.convertAndSend("order.receiver.CustomDLQ", event);
+//                return;
+//            }
+//
+//            Event newEvent = new Event(event.payload(), nextAttempt, error.getMessage());
+//            queueJmsTemplate.convertAndSend("order.receiver.queue", newEvent);
+//        }
+//    }
 
 }
